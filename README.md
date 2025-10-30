@@ -1,54 +1,52 @@
-# Welcome to your Lovable project
+# 🕵️ Brooklyn Nine-Nine: Halloween Heist BFS Visualizer
 
-## Project info
+A fun, interactive visualization of the **Brooklyn Nine-Nine Halloween Heist**, built with a **multi-agent BFS algorithm** and a **pixel-art precinct map**.  
+Detectives like Jake, Amy, and Rosa race across the grid to reach the trophy first — unlocking doors, cooperating, and competing in true Nine-Nine style!
 
-**URL**: https://lovable.dev/projects/2686db61-b8b6-4e8f-a410-5f4f68d99734
+---
 
-## How can I edit this code?
+## 🎯 Overview
 
-There are several ways of editing your application.
+This project combines **algorithmic logic** and **visual storytelling**.  
+The backend uses **Python** to simulate a multi-source BFS (Breadth-First Search) where detectives move simultaneously with shared state management for locked doors.  
+The frontend visualizes this process using **React**, **TailwindCSS**, and **Canvas** with animated pixel detectives moving through a retro precinct map.
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2686db61-b8b6-4e8f-a410-5f4f68d99734) and start prompting.
+## ⚙️ Features
 
-Changes made via Lovable will be committed automatically to this repo.
+- 🗺️ Interactive 2D grid visualization of the precinct  
+- 🧩 Detectives with unique avatars and colors  
+- 🔐 Locked doors and cooperative key mechanics  
+- ⏱️ Step-by-step BFS progression with animations  
+- 🏆 Glowing trophy and victory celebration  
+- 🎮 Controls for Start, Pause, Reset, and Speed adjustment  
+- 💡 Brooklyn Nine-Nine inspired theme and humor  
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🧠 Algorithm
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+The Python backend implements a **multi-agent BFS**:
+- Each detective starts from their position, possibly carrying a key.
+- Detectives move simultaneously across the grid.
+- When any detective with a key reaches a locked door, it unlocks for all others.
+- The algorithm finds the **minimum time** for any detective to reach the trophy.
+- If multiple reach simultaneously, the lexicographically smallest name wins.
 
-Follow these steps:
+Example Input:
+5 5 3
+Jake 0 0 1
+Amy 4 4 0
+Rosa 2 0 0
+2 2
+2
+1 2
+2 1
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Example Output:
+3
+Jake
 
 ## What technologies are used for this project?
 
@@ -60,14 +58,13 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+- ❤️ Acknowledgements
 
-Simply open [Lovable](https://lovable.dev/projects/2686db61-b8b6-4e8f-a410-5f4f68d99734) and click on Share -> Publish.
+Inspired by the humor and chaos of Brooklyn Nine-Nine.
+Built for fun, learning, and celebrating algorithms with style.
+Nine-Nine!
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Developed by:
+👨‍💻 Arnab Mandal
+👨‍💻 Krishna Mohan
+👨‍💻 Chetan Anand
