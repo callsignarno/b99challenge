@@ -47,16 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
+        /* Brooklyn Nine-Nine Detective Colors */
+        jake: "hsl(var(--jake))",
+        amy: "hsl(var(--amy))",
+        rosa: "hsl(var(--rosa))",
+        terry: "hsl(var(--terry))",
+        /* Grid Colors */
+        "grid-empty": "hsl(var(--grid-empty))",
+        "grid-locked": "hsl(var(--grid-locked))",
+        "grid-unlocked": "hsl(var(--grid-unlocked))",
+        "grid-trophy": "hsl(var(--grid-trophy))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -80,10 +80,56 @@ export default {
             height: "0",
           },
         },
+        "glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 20px hsl(45 95% 55% / 0.5)",
+          },
+          "50%": {
+            boxShadow: "0 0 40px hsl(45 95% 55% / 0.9)",
+          },
+        },
+        "trophy-glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 30px hsl(45 95% 60% / 0.6), 0 0 60px hsl(45 95% 60% / 0.4)",
+          },
+          "50%": {
+            boxShadow: "0 0 50px hsl(45 95% 60% / 1), 0 0 100px hsl(45 95% 60% / 0.6)",
+          },
+        },
+        "bounce-in": {
+          "0%": {
+            transform: "scale(0.3)",
+            opacity: "0",
+          },
+          "50%": {
+            transform: "scale(1.05)",
+          },
+          "70%": {
+            transform: "scale(0.9)",
+          },
+          "100%": {
+            transform: "scale(1)",
+            opacity: "1",
+          },
+        },
+        "slide-up": {
+          "0%": {
+            transform: "translateY(20px)",
+            opacity: "0",
+          },
+          "100%": {
+            transform: "translateY(0)",
+            opacity: "1",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "glow": "glow 2s ease-in-out infinite",
+        "trophy-glow": "trophy-glow 1.5s ease-in-out infinite",
+        "bounce-in": "bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        "slide-up": "slide-up 0.4s ease-out",
       },
     },
   },
