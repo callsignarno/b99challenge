@@ -38,6 +38,7 @@ The Python backend implements a **multi-agent BFS**:
 
 ## Example Input:
 
+```plaintext
 5 5 3
 Jake 0 0 1
 Amy 4 4 0
@@ -46,12 +47,15 @@ Rosa 2 0 0
 2
 1 2
 2 1
+```
 
 ---
 
 ## Example Output:
+```plaintext
 3
 Jake
+```
 
 ---
 
