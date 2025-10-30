@@ -34,7 +34,10 @@ The Python backend implements a **multi-agent BFS**:
 - The algorithm finds the **minimum time** for any detective to reach the trophy.
 - If multiple reach simultaneously, the lexicographically smallest name wins.
 
-Example Input:
+---
+
+## Example Input:
+
 5 5 3
 Jake 0 0 1
 Amy 4 4 0
@@ -44,9 +47,13 @@ Rosa 2 0 0
 1 2
 2 1
 
-Example Output:
+---
+
+## Example Output:
 3
 Jake
+
+---
 
 ## What technologies are used for this project?
 
@@ -57,8 +64,10 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+  
+---
 
-- ❤️ Acknowledgements
+## ❤️ Acknowledgements
 
 Inspired by the humor and chaos of Brooklyn Nine-Nine.
 Built for fun, learning, and celebrating algorithms with style.
