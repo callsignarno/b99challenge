@@ -82,7 +82,7 @@ export const useBFSSimulation = (
 
       // Check if reached trophy
       if (r === trophy.r && c === trophy.c) {
-        result = { time: time + 1, name };
+        result = { time, name };
         break;
       }
 
