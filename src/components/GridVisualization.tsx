@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Detective, Position, SimulationState, DETECTIVE_COLORS, DETECTIVE_EMOJIS } from "@/types/bfs";
-import { Trophy, Lock, LockOpen } from "lucide-react";
+import { Trophy, Lock, LockOpen, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface GridVisualizationProps {
   rows: number;
@@ -18,6 +19,35 @@ export const GridVisualization = ({
   trophy,
 }: GridVisualizationProps) => {
   const cellSize = Math.min(60, Math.floor(600 / Math.max(rows, cols)));
+  const [confetti, setConfetti] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const [unlockedDoors, setUnlockedDoors] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (simulationState?.result) {
+      const confettiPieces = Array.from({ length: 50 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 50,
+      }));
+      setConfetti(confettiPieces);
+    } else {
+      setConfetti([]);
+    }
+  }, [simulationState?.result]);
+
+  useEffect(() => {
+    if (simulationState?.unlockedDoors && simulationState.grid) {
+      const newUnlockedDoors = new Set<string>();
+      simulationState.grid.forEach((row, r) => {
+        row.forEach((cell, c) => {
+          if (cell === "unlocked") {
+            newUnlockedDoors.add(`${r},${c}`);
+          }
+        });
+      });
+      setUnlockedDoors(newUnlockedDoors);
+    }
+  }, [simulationState?.unlockedDoors, simulationState?.grid]);
 
   const getCellContent = (r: number, c: number) => {
     if (!simulationState || !simulationState.grid || !simulationState.grid[r]) return null;
@@ -37,15 +67,39 @@ export const GridVisualization = ({
       return (
         <motion.div
           key={`detective-${name}-${r}-${c}`}
-          className={`${color} rounded-full flex items-center justify-center text-2xl shadow-lg z-10`}
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          style={{ width: cellSize * 0.8, height: cellSize * 0.8 }}
+          className={`${color} rounded-full flex items-center justify-center text-2xl shadow-lg z-10 pixel-borders relative`}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ 
+            scale: 1, 
+            opacity: 1,
+          }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 260, 
+            damping: 20,
+            duration: 0.4
+          }}
+          style={{ 
+            width: cellSize * 0.8, 
+            height: cellSize * 0.8,
+            boxShadow: `0 0 10px ${color.replace('bg-', 'rgba(var(--')})`,
+          }}
         >
-          {DETECTIVE_EMOJIS[name]}
+          <motion.span
+            className="animate-walk"
+            animate={{ y: [0, -2, 0] }}
+            transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            {DETECTIVE_EMOJIS[name]}
+          </motion.span>
           {detective?.hasKey && (
-            <span className="absolute -top-1 -right-1 text-xs">🔑</span>
+            <motion.span 
+              className="absolute -top-1 -right-1 text-xs"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 1, repeat: Infinity }}
+            >
+              🔑
+            </motion.span>
           )}
         </motion.div>
       );
@@ -54,11 +108,25 @@ export const GridVisualization = ({
     if (cellType === "trophy") {
       return (
         <motion.div
-          className="text-4xl animate-trophy-glow"
-          animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          className="relative animate-trophy-glow"
+          animate={{ 
+            rotate: [0, 5, -5, 0],
+            scale: [1, 1.05, 1]
+          }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Trophy className="text-grid-trophy fill-grid-trophy" size={cellSize * 0.6} />
+          <Trophy 
+            className="text-grid-trophy fill-grid-trophy pixel-borders" 
+            size={cellSize * 0.6}
+            strokeWidth={3}
+          />
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center"
+            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Sparkles className="text-yellow-300" size={cellSize * 0.8} />
+          </motion.div>
         </motion.div>
       );
     }
@@ -68,21 +136,32 @@ export const GridVisualization = ({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="text-grid-locked"
+          className="text-grid-locked pixel-borders"
         >
-          <Lock size={cellSize * 0.5} />
+          <Lock size={cellSize * 0.5} strokeWidth={3} />
         </motion.div>
       );
     }
 
     if (cellType === "unlocked") {
+      const justUnlocked = unlockedDoors.has(`${r},${c}`);
       return (
         <motion.div
           initial={{ scale: 0.5 }}
           animate={{ scale: 1 }}
-          className="text-grid-unlocked"
+          className={`text-grid-unlocked pixel-borders ${justUnlocked ? 'animate-unlock-flash' : ''}`}
         >
-          <LockOpen size={cellSize * 0.5} />
+          <LockOpen size={cellSize * 0.5} strokeWidth={3} />
+          {justUnlocked && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: 2, opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Sparkles className="text-green-400" size={cellSize * 0.6} />
+            </motion.div>
+          )}
         </motion.div>
       );
     }
@@ -105,34 +184,44 @@ export const GridVisualization = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6">
+    <div className="flex flex-col items-center gap-4 p-6 relative">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-primary mb-2">
+        <motion.h2 
+          className="text-3xl font-bold text-primary mb-2 pixel-borders"
+          animate={{ textShadow: ["0 0 10px rgba(234, 179, 8, 0.5)", "0 0 20px rgba(234, 179, 8, 0.8)", "0 0 10px rgba(234, 179, 8, 0.5)"] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
           🚨 NYPD 99th Precinct Investigation 🚨
-        </h2>
+        </motion.h2>
         {simulationState && (
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground font-mono">
             Time Step: <span className="text-primary font-bold">{simulationState.time}</span>
           </p>
         )}
       </div>
 
       <div
-        className="grid gap-1 p-6 bg-card rounded-lg border-2 border-primary/30 shadow-2xl"
+        className="grid gap-1 p-6 bg-card rounded-lg border-4 border-primary shadow-2xl scanline retro-glow pixel-borders relative"
         style={{
           gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
           gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
+          borderImage: "repeating-linear-gradient(45deg, hsl(var(--primary)), hsl(var(--primary)) 10px, transparent 10px, transparent 20px) 4",
         }}
       >
         {Array.from({ length: rows }).map((_, r) =>
           Array.from({ length: cols }).map((_, c) => (
             <motion.div
               key={`${r}-${c}`}
-              className={`border border-border/50 rounded flex items-center justify-center relative transition-colors ${getCellClassName(r, c)}`}
-              style={{ width: cellSize, height: cellSize }}
-              whileHover={{ scale: 1.05 }}
+              className={`border-2 border-border/50 rounded flex items-center justify-center relative transition-colors pixel-borders ${getCellClassName(r, c)}`}
+              style={{ 
+                width: cellSize, 
+                height: cellSize,
+                boxShadow: "inset 0 0 5px rgba(0,0,0,0.3)"
+              }}
+              whileHover={{ scale: 1.05, borderColor: "rgba(234, 179, 8, 0.5)" }}
+              transition={{ duration: 0.2 }}
             >
-              <div className="absolute top-0 left-0 text-[8px] text-muted-foreground/50 p-0.5">
+              <div className="absolute top-0 left-0 text-[8px] text-muted-foreground/50 p-0.5 font-mono">
                 {r},{c}
               </div>
               {getCellContent(r, c)}
@@ -141,19 +230,45 @@ export const GridVisualization = ({
         )}
       </div>
 
-      {simulationState?.result && (
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="bg-primary text-primary-foreground px-8 py-4 rounded-lg shadow-xl text-center animate-bounce-in"
-        >
-          <h3 className="text-2xl font-bold mb-2">🎉 CASE SOLVED! 🎉</h3>
-          <p className="text-lg">
-            Detective <span className="font-bold">{simulationState.result.name}</span> reached the trophy!
-          </p>
-          <p className="text-sm mt-1">Time: {simulationState.result.time} steps</p>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {simulationState?.result && (
+          <>
+            {confetti.map((piece) => (
+              <motion.div
+                key={piece.id}
+                className="absolute text-2xl pointer-events-none animate-confetti"
+                initial={{ x: `${piece.x}%`, y: `${piece.y}%`, rotate: 0 }}
+                style={{ 
+                  left: 0, 
+                  top: 0,
+                }}
+              >
+                {["🎉", "⭐", "🏆", "💛", "🎊"][piece.id % 5]}
+              </motion.div>
+            ))}
+            <motion.div
+              initial={{ scale: 0, opacity: 0, rotate: -10 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              className="bg-primary text-primary-foreground px-8 py-6 rounded-lg shadow-2xl text-center animate-stamp border-4 border-yellow-400"
+              style={{
+                boxShadow: "0 0 30px rgba(234, 179, 8, 0.6), inset 0 0 20px rgba(0,0,0,0.2)"
+              }}
+            >
+              <motion.h3 
+                className="text-3xl font-bold mb-2 pixel-borders"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+              >
+                🎉 CASE SOLVED! 🎉
+              </motion.h3>
+              <p className="text-xl font-mono">
+                Detective <span className="font-bold text-yellow-300">{simulationState.result.name}</span> reached the trophy!
+              </p>
+              <p className="text-sm mt-2 font-mono">Time: {simulationState.result.time} steps</p>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

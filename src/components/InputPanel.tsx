@@ -76,14 +76,14 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md h-fit sticky top-4">
+    <Card className="w-full max-w-md h-fit sticky top-4 pixel-borders retro-glow scanline">
       <CardHeader>
-        <CardTitle className="text-primary">⚙️ Mission Configuration</CardTitle>
+        <CardTitle className="text-primary font-mono">⚙️ Mission Configuration</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
         {/* Grid Size */}
         <div className="space-y-2">
-          <Label>Grid Size</Label>
+          <Label className="font-mono">Grid Size</Label>
           <div className="flex gap-2">
             <Input
               type="number"
@@ -92,6 +92,7 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
               onChange={(e) => setRows(Math.max(1, parseInt(e.target.value) || 1))}
               min={1}
               max={20}
+              className="pixel-borders font-mono"
             />
             <Input
               type="number"
@@ -100,6 +101,7 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
               onChange={(e) => setCols(Math.max(1, parseInt(e.target.value) || 1))}
               min={1}
               max={20}
+              className="pixel-borders font-mono"
             />
           </div>
         </div>
@@ -107,26 +109,28 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
         {/* Detectives */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label>Detectives</Label>
+            <Label className="font-mono">Detectives</Label>
             <Button
               size="sm"
               variant="outline"
               onClick={addDetective}
               disabled={detectives.length >= 4}
+              className="pixel-borders"
             >
               <Plus className="h-4 w-4" />
             </Button>
           </div>
           {detectives.map((detective, i) => (
-            <Card key={i} className="p-3 space-y-2">
+            <Card key={i} className="p-3 space-y-2 pixel-borders">
               <div className="flex items-center justify-between">
-                <span className={`px-2 py-1 rounded text-xs font-bold ${detective.color} text-foreground`}>
+                <span className={`px-2 py-1 rounded text-xs font-bold ${detective.color} text-foreground pixel-borders font-mono`}>
                   {detective.name}
                 </span>
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => removeDetective(i)}
+                  className="pixel-borders"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -141,6 +145,7 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
                   }
                   min={0}
                   max={rows - 1}
+                  className="pixel-borders font-mono"
                 />
                 <Input
                   type="number"
@@ -151,14 +156,16 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
                   }
                   min={0}
                   max={cols - 1}
+                  className="pixel-borders font-mono"
                 />
               </div>
               <div className="flex items-center gap-2">
                 <Switch
                   checked={detective.hasKey}
                   onCheckedChange={(checked) => updateDetective(i, "hasKey", checked)}
+                  className="pixel-borders"
                 />
-                <Label className="text-xs">Has Key 🔑</Label>
+                <Label className="text-xs font-mono">Has Key 🔑</Label>
               </div>
             </Card>
           ))}
@@ -166,7 +173,7 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
 
         {/* Trophy Position */}
         <div className="space-y-2">
-          <Label>Trophy Position 🏆</Label>
+          <Label className="font-mono">Trophy Position 🏆</Label>
           <div className="flex gap-2">
             <Input
               type="number"
@@ -177,6 +184,7 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
               }
               min={0}
               max={rows - 1}
+              className="pixel-borders font-mono"
             />
             <Input
               type="number"
@@ -187,6 +195,7 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
               }
               min={0}
               max={cols - 1}
+              className="pixel-borders font-mono"
             />
           </div>
         </div>
@@ -194,8 +203,8 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
         {/* Locked Doors */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label>Locked Doors 🔒</Label>
-            <Button size="sm" variant="outline" onClick={addLockedDoor}>
+            <Label className="font-mono">Locked Doors 🔒</Label>
+            <Button size="sm" variant="outline" onClick={addLockedDoor} className="pixel-borders">
               <Plus className="h-4 w-4" />
             </Button>
           </div>
@@ -210,6 +219,7 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
                 }
                 min={0}
                 max={rows - 1}
+                className="pixel-borders font-mono"
               />
               <Input
                 type="number"
@@ -220,11 +230,13 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
                 }
                 min={0}
                 max={cols - 1}
+                className="pixel-borders font-mono"
               />
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => removeLockedDoor(i)}
+                className="pixel-borders"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -232,7 +244,7 @@ export const InputPanel = ({ onConfigSubmit }: InputPanelProps) => {
           ))}
         </div>
 
-        <Button onClick={handleSubmit} className="w-full font-bold" size="lg">
+        <Button onClick={handleSubmit} className="w-full font-bold pixel-borders font-mono" size="lg">
           🚀 Start Mission
         </Button>
       </CardContent>
