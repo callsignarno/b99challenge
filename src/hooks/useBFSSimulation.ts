@@ -163,6 +163,11 @@ export const useBFSSimulation = (
     initializeSimulation();
   }, [initializeSimulation]);
 
+  // Initialize simulation on mount or when config changes
+  useEffect(() => {
+    initializeSimulation();
+  }, [initializeSimulation]);
+
   useEffect(() => {
     if (isRunning) {
       intervalRef.current = setInterval(() => {

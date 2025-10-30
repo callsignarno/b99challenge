@@ -20,7 +20,7 @@ export const GridVisualization = ({
   const cellSize = Math.min(60, Math.floor(600 / Math.max(rows, cols)));
 
   const getCellContent = (r: number, c: number) => {
-    if (!simulationState) return null;
+    if (!simulationState || !simulationState.grid || !simulationState.grid[r]) return null;
 
     const cellType = simulationState.grid[r][c];
     
@@ -91,7 +91,7 @@ export const GridVisualization = ({
   };
 
   const getCellClassName = (r: number, c: number) => {
-    if (!simulationState) return "bg-grid-empty";
+    if (!simulationState || !simulationState.grid || !simulationState.grid[r]) return "bg-grid-empty";
     
     const cellType = simulationState.grid[r][c];
     const isVisited = simulationState.visitedPositions.has(`${r},${c}`);
