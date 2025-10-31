@@ -3,6 +3,20 @@ import { Detective, Position, SimulationState, DETECTIVE_COLORS, DETECTIVE_EMOJI
 import { Trophy, Lock, LockOpen, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
+const DETECTIVE_QUOTES: Record<string, string[]> = {
+  Jake: ["Cool. Cool cool cool.", "Title of your tape!", "Nine-Nine!", "Noice!"],
+  Amy: ["I'm the human form of the 💯 emoji", "Binders ready!", "Label maker activated"],
+  Rosa: ["No one will find the body", "Don't talk to me", "I know a guy"],
+  Terry: ["Terry loves treasure!", "Terry's got this!", "Terry needs backup!"],
+};
+
+const PRECINCT_FLAVOR = [
+  "🖥️ Evidence Board Active",
+  "📋 Case File #99",
+  "☕ Break Room Secured",
+  "🚨 Heist Protocol Engaged",
+];
+
 interface GridVisualizationProps {
   rows: number;
   cols: number;
@@ -21,6 +35,8 @@ export const GridVisualization = ({
   const cellSize = Math.min(60, Math.floor(600 / Math.max(rows, cols)));
   const [confetti, setConfetti] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const [unlockedDoors, setUnlockedDoors] = useState<Set<string>>(new Set());
+  const [detectiveQuotes, setDetectiveQuotes] = useState<Map<string, string>>(new Map());
+  const [flavorText, setFlavorText] = useState(PRECINCT_FLAVOR[0]);
 
   useEffect(() => {
     if (simulationState?.result) {
@@ -49,6 +65,26 @@ export const GridVisualization = ({
     }
   }, [simulationState?.unlockedDoors, simulationState?.grid]);
 
+  useEffect(() => {
+    if (simulationState?.time && simulationState.time % 3 === 0) {
+      const randomFlavor = PRECINCT_FLAVOR[Math.floor(Math.random() * PRECINCT_FLAVOR.length)];
+      setFlavorText(randomFlavor);
+    }
+  }, [simulationState?.time]);
+
+  useEffect(() => {
+    if (simulationState?.detectives) {
+      const newQuotes = new Map<string, string>();
+      simulationState.detectives.forEach((pos, name) => {
+        if (Math.random() > 0.7 && DETECTIVE_QUOTES[name]) {
+          const quotes = DETECTIVE_QUOTES[name];
+          newQuotes.set(name, quotes[Math.floor(Math.random() * quotes.length)]);
+        }
+      });
+      setDetectiveQuotes(newQuotes);
+    }
+  }, [simulationState?.time]);
+
   const getCellContent = (r: number, c: number) => {
     if (!simulationState || !simulationState.grid || !simulationState.grid[r]) return null;
 
@@ -63,45 +99,59 @@ export const GridVisualization = ({
       const [name] = detectiveAtPos;
       const detective = detectives.find(d => d.name === name);
       const color = DETECTIVE_COLORS[name] || "bg-primary";
+      const quote = detectiveQuotes.get(name);
       
       return (
-        <motion.div
-          key={`detective-${name}-${r}-${c}`}
-          className={`${color} rounded-full flex items-center justify-center text-2xl shadow-lg z-10 pixel-borders relative`}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ 
-            scale: 1, 
-            opacity: 1,
-          }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 260, 
-            damping: 20,
-            duration: 0.4
-          }}
-          style={{ 
-            width: cellSize * 0.8, 
-            height: cellSize * 0.8,
-            boxShadow: `0 0 10px ${color.replace('bg-', 'rgba(var(--')})`,
-          }}
-        >
-          <motion.span
-            className="animate-walk"
-            animate={{ y: [0, -2, 0] }}
-            transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
+        <div className="relative">
+          <motion.div
+            key={`detective-${name}-${r}-${c}`}
+            className={`${color} rounded-full flex items-center justify-center text-2xl shadow-lg z-10 pixel-borders relative`}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ 
+              scale: 1, 
+              opacity: 1,
+            }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 260, 
+              damping: 20,
+              duration: 0.4
+            }}
+            style={{ 
+              width: cellSize * 0.8, 
+              height: cellSize * 0.8,
+              boxShadow: `0 0 10px ${color.replace('bg-', 'rgba(var(--')})`,
+            }}
           >
-            {DETECTIVE_EMOJIS[name]}
-          </motion.span>
-          {detective?.hasKey && (
-            <motion.span 
-              className="absolute -top-1 -right-1 text-xs"
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 1, repeat: Infinity }}
+            <motion.span
+              className="animate-walk"
+              animate={{ y: [0, -2, 0] }}
+              transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
             >
-              🔑
+              {DETECTIVE_EMOJIS[name]}
             </motion.span>
+            {detective?.hasKey && (
+              <motion.span 
+                className="absolute -top-1 -right-1 text-xs"
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                🔑
+              </motion.span>
+            )}
+          </motion.div>
+          {quote && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-primary/90 text-primary-foreground px-2 py-1 rounded text-xs whitespace-nowrap pixel-borders font-mono z-20"
+              style={{ fontSize: '10px' }}
+            >
+              {quote}
+            </motion.div>
           )}
-        </motion.div>
+        </div>
       );
     }
 
@@ -194,9 +244,19 @@ export const GridVisualization = ({
           🚨 NYPD 99th Precinct Investigation 🚨
         </motion.h2>
         {simulationState && (
-          <p className="text-lg text-muted-foreground font-mono">
-            Time Step: <span className="text-primary font-bold">{simulationState.time}</span>
-          </p>
+          <div className="space-y-1">
+            <p className="text-lg text-muted-foreground font-mono">
+              Time Step: <span className="text-primary font-bold">{simulationState.time}</span>
+            </p>
+            <motion.p 
+              key={flavorText}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-sm text-primary/70 font-mono"
+            >
+              {flavorText}
+            </motion.p>
+          </div>
         )}
       </div>
 
@@ -261,10 +321,21 @@ export const GridVisualization = ({
               >
                 🎉 CASE SOLVED! 🎉
               </motion.h3>
-              <p className="text-xl font-mono">
+              <p className="text-xl font-mono mb-1">
                 Detective <span className="font-bold text-yellow-300">{simulationState.result.name}</span> reached the trophy!
               </p>
-              <p className="text-sm mt-2 font-mono">Time: {simulationState.result.time} steps</p>
+              <p className="text-sm font-mono mb-2">Time: {simulationState.result.time} steps</p>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-base font-mono italic text-yellow-200"
+              >
+                {simulationState.result.name === "Jake" && "Noice! Smort!"}
+                {simulationState.result.name === "Amy" && "Bingpot! Captain would be proud!"}
+                {simulationState.result.name === "Rosa" && "Told you I'd win. No surprises here."}
+                {simulationState.result.name === "Terry" && "Terry did it! Terry loves winning!"}
+              </motion.p>
             </motion.div>
           </>
         )}
